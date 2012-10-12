@@ -1,18 +1,18 @@
-Revere – ratings and reviews; Front-End Implementation
+Revere - ratings and reviews; Front-End Implementation
 
-The front-end implementation of Revere is designed to offer optimum flexibility in design, layout, presentation, and control to the user. Every element on the page is completely customizable via HTML, CSS, and JavaScript. However, Revere is completely capable “out of the box” for the user looking for a quick installation.
+The front-end implementation of Revere is designed to offer optimum flexibility in design, layout, presentation, and control to the user. Every element on the page is completely customizable via HTML, CSS, and JavaScript. However, Revere is completely capable "out of the box" for the user looking for a quick installation.
 
 Recommended Installation
-1.	JavaScript
-2.	HTML
-3.	CSS
-4.	Images
+1. JavaScript
+2. HTML
+3. CSS
+4. Images
 
 1. JavaScript
 Revere consists of a JavaScript engine that displays user reviews and allows users to write new reviews. Revere uses jQuery and the Mustache templating engine, but the engine will load these if they are not already found on the page.
 
 The minimum JavaScript requirements for a page using Revere is to include the script on the page, for example 
-<script src=”http://yoursite.com/revere.js”></script> just before the closing <body> tag of the HTML page, following any JavaScript the website is using. After including the script, it is necessary to set several global variables, and initialize the script with the following code:
+<script src="http://yoursite.com/revere.js"></script> just before the closing <body> tag of the HTML page, following any JavaScript the website is using. After including the script, it is necessary to set several global variables, and initialize the script with the following code:
 <script type="text/javascript">
 	REV.base = 'http://revere.marketagility.com/';
       REV.companyID = '3';
@@ -24,35 +24,35 @@ The minimum JavaScript requirements for a page using Revere is to include the sc
 	REV.init('snippet,read,write', REV.base, REV.companyID, REV.productID);
 </script>
 Explanation of variables:
-•	REV.base = the URL where the review data is stored
-•	REV.companyID = the company ID assigned to your company
-•	REV.productID = the ID of the product to read and/or write reviews for
-•	REV.userID = the ID of the user on the web site (from your system)
-•	REV.READ.tmplPath = the path to the directory containing the template for reading full reviews
-•	REV.SNIPPET.tmplPath = the path to the directory containing the template for reading “snippets” of reviews (just the overall rating information, not the detailed individual reviews)
-•	REV.WRITE.tmplPath = the path the directory containing the template for writing a new review
-•	REV.init = the function to initialize the Revere engine. The required paramaters are the type Revere action(s) to take (as a comma separated list – any combination of read, write, and snippet), the base URL for Revere, your Revere companyID and the product ID).
+* REV.base = the URL where the review data is stored
+* REV.companyID = the company ID assigned to your company
+* REV.productID = the ID of the product to read and/or write reviews for
+* REV.userID = the ID of the user on the web site (from your system)
+* REV.READ.tmplPath = the path to the directory containing the template for reading full reviews
+* REV.SNIPPET.tmplPath = the path to the directory containing the template for reading "snippets" of reviews (just the overall rating information, not the detailed individual reviews)
+* REV.WRITE.tmplPath = the path the directory containing the template for writing a new review
+* REV.init = the function to initialize the Revere engine. The required paramaters are the type Revere action(s) to take (as a comma separated list - any combination of read, write, and snippet), the base URL for Revere, your Revere companyID and the product ID).
 
 Optional variables
 
 In addition to the required variables and parameters you may assign other variables for the engine to use.
 
-•	REV. pageSize = the number of reviews to include on each page if the reviews will be paginated. This is an integer, for example: 5.
-•	REV.callback = your own JavaScript function to call after the designated template has successfully loaded. The parameter this custom function will receive is the Revere type of template loaded; either “WRITE”,”READ”, or “SNIPPET”. We recommend this function check that parameter to perform custom actions once a Revere type gets loaded (for example applying a jQuery plugin to style form elements for the review writing. This is a string, for example: ‘revereLoaded’.
-•	REV.submitReview = the function to call after a user submits a new review. This function will receive a parameter indicating whether the review was successfully submitted – it will be “ok” if the review was successfully submitted or “error” if it was not submitted.
+* REV. pageSize = the number of reviews to include on each page if the reviews will be paginated. This is an integer, for example: 5.
+* REV.callback = your own JavaScript function to call after the designated template has successfully loaded. The parameter this custom function will receive is the Revere type of template loaded; either "WRITE","READ", or "SNIPPET". We recommend this function check that parameter to perform custom actions once a Revere type gets loaded (for example applying a jQuery plugin to style form elements for the review writing. This is a string, for example: 'revereLoaded'.
+* REV.submitReview = the function to call after a user submits a new review. This function will receive a parameter indicating whether the review was successfully submitted - it will be "ok" if the review was successfully submitted or "error" if it was not submitted.
 
 
 2. HTML
 Revere allows full control over the HTML used to display reviews and the form to write reviews. Each Revere type (READ, SNIPPET, WRITE) is generated from a template. The templates contain DOM elements and variables that link the data to the template. The templates can be laid out and styled in any custom fashion desired.
 
-By default, Revere will look for a template named “default.html” in the directory defined in the variable for each Revere Type, but this can be changed easily.
+By default, Revere will look for a template named "default.html" in the directory defined in the variable for each Revere Type, but this can be changed easily.
 
 To display a Revere type on a page, just insert the following bit of code where the template should appear:
 <div id="snippet-wrap" data-rev="rev-snippet" data-pid="25661" data-tmpl="snippet" class="snippet-wrap"></div>
 
-The id is arbitrary, as is the class. The required data attribute “data-rev” tells the page what type of Revere object to use (rev-read, rev-snippet, or rev-write) while the optional data-tmpl attribute is used to define the template to use for rendering the Revere object. If no data-tmpl attribute is found, Revere will look for the template named “default.html” in the directory defined in the variable set for each Revere type. The data-pid attribute is the product ID of the product to read/write reviews for. 
+The id is arbitrary, as is the class. The required data attribute "data-rev" tells the page what type of Revere object to use (rev-read, rev-snippet, or rev-write) while the optional data-tmpl attribute is used to define the template to use for rendering the Revere object. If no data-tmpl attribute is found, Revere will look for the template named "default.html" in the directory defined in the variable set for each Revere type. The data-pid attribute is the product ID of the product to read/write reviews for. 
 
-The templates contain required ID’s data attributes on the elements that should not be changed. The classes on the elements can be changed as necessary to accommodate for CSS to control the display of the elements.
+The templates contain required ID's data attributes on the elements that should not be changed. The classes on the elements can be changed as necessary to accommodate for CSS to control the display of the elements.
 
 Snippet
 
@@ -68,7 +68,7 @@ Here is the default HTML for the template:
 {{/rating}}
 
 And this is a sample screenshot of how it renders in a browser:
- 
+
 
 Read
 
@@ -155,7 +155,7 @@ Here is the default HTML for the template:
 {{/reviewPages}}
 
 And here is a sample screenshot of what the browser renders:
- 
+
 Write
 
 The Revere WRITE default template displays each individual review for the product, or if there are no reviews, the text to be displayed in place of reviews.
@@ -269,27 +269,27 @@ Here is the default HTML for the template:
 </div><!-- /.rev-wrapper -->
 
 And here is a sample screen shot of how the template renders in a browser:
- 
+
 3. CSS
-The default CSS for the templates is based on the Twitter Bootstrap framework, but any other framework or custom CSS can be used to style the elements in the templates. It bears repeating that the elements’ classes should be used for CSS, reserving the ID’s and data attributes for the Revere engine to function properly. We recommend including a css file exclusively for the reviews in addition to any css files used on the site without reviews. This stylesheet should be inserted into the document’s <head> after any existing stylesheets.
+The default CSS for the templates is based on the Twitter Bootstrap framework, but any other framework or custom CSS can be used to style the elements in the templates. It bears repeating that the elements' classes should be used for CSS, reserving the ID's and data attributes for the Revere engine to function properly. We recommend including a css file exclusively for the reviews in addition to any css files used on the site without reviews. This stylesheet should be inserted into the document's <head> after any existing stylesheets.
 
 For example <link rel="stylesheet" href="assets/css/revere.css">
 
 4. Images
-Revere uses images to display “star” ratings.  These images can be uploaded into the Revere admin, or replaced on your web server. One image is required for each possible “star” rating (0 through 5, in increments of 0.5) for the snippets, and one smaller image for each possible “star” rating for reviews. And “empty star” and a “filled star” are required for the jQuery plugin that allows the Revere WRITE template to use stars in place of radio buttons.
+Revere uses images to display "star" ratings.  These images can be uploaded into the Revere admin, or replaced on your web server. One image is required for each possible "star" rating (0 through 5, in increments of 0.5) for the snippets, and one smaller image for each possible "star" rating for reviews. And "empty star" and a "filled star" are required for the jQuery plugin that allows the Revere WRITE template to use stars in place of radio buttons.
 
-The large “star” images are recommended to be 320px wide by 64px tall (each “star” is 64 by 64). The smaller “stars” should be 160px wide by 32px tall (each “star” is 32 by 32.)
+The large "star" images are recommended to be 320px wide by 64px tall (each "star" is 64 by 64). The smaller "stars" should be 160px wide by 32px tall (each "star" is 32 by 32.)
 
 
 Data Objects
-Revere uses 2 basic data objects – one for both READ and Write, and one for the SNIPPET. These data objects provide the key/value pairs that can be displayed via the templates. 
+Revere uses 2 basic data objects - one for both READ and Write, and one for the SNIPPET. These data objects provide the key/value pairs that can be displayed via the templates. 
 
 A sample READ/WRITE data object is as follows:
 {
     "productID": "25661",
     "name": "Femme Fatale Top",
     "brand": "Windsor",
-    "description": "You’ll feel like a fierce leading lady in this Femme Fatale Spellbound Floral Top.  Featuring a delightful scoop neckline and cinched waist, this short-sleeve peplum offers pristine pleating and clean construction throughout. Form-fitting and with a flirty hem finish, this zip-back top is a beautiful complement to Trina’s Tony Pant in Vertigo Twill.<LI>Made in California<LI>Approx. length from shoulder: 23 3/4&quot;<LI>Fully lined<LI>Center back zip<LI>Dry Clean<LI>100% Polyester",
+    "description": "You'll feel like a fierce leading lady in this Femme Fatale Spellbound Floral Top.  Featuring a delightful scoop neckline and cinched waist, this short-sleeve peplum offers pristine pleating and clean construction throughout. Form-fitting and with a flirty hem finish, this zip-back top is a beautiful complement to Trina's Tony Pant in Vertigo Twill.<LI>Made in California<LI>Approx. length from shoulder: 23 3/4&quot;<LI>Fully lined<LI>Center back zip<LI>Dry Clean<LI>100% Polyester",
     "URL": "http://ma45demo.virid.com/p/25661/Femme-Fatale-Top.aspx",
     "imageURL": "http://ma45demo.virid.com/images/products/1_25661_FS.JPG",
     "price": "$218.00",
@@ -415,8 +415,8 @@ A sample READ/WRITE data object is as follows:
                     "nickname": "joe",
                     "notes": "",
                     "productID": "25661",
-                    "review": "joe’s thoughts: this product rocks it’s vegan leather",
-                    "revtitle": "joe’s title",
+                    "review": "joe's thoughts: this product rocks it's vegan leather",
+                    "revtitle": "joe's title",
                     "userID": "1",
                     "userattributes": []
                 }
