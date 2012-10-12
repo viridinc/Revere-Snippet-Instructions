@@ -1,0 +1,736 @@
+Revere – ratings and reviews; Front-End Implementation
+
+The front-end implementation of Revere is designed to offer optimum flexibility in design, layout, presentation, and control to the user. Every element on the page is completely customizable via HTML, CSS, and JavaScript. However, Revere is completely capable “out of the box” for the user looking for a quick installation.
+
+Recommended Installation
+1.	JavaScript
+2.	HTML
+3.	CSS
+4.	Images
+
+1. JavaScript
+Revere consists of a JavaScript engine that displays user reviews and allows users to write new reviews. Revere uses jQuery and the Mustache templating engine, but the engine will load these if they are not already found on the page.
+
+The minimum JavaScript requirements for a page using Revere is to include the script on the page, for example 
+<script src=”http://yoursite.com/revere.js”></script> just before the closing <body> tag of the HTML page, following any JavaScript the website is using. After including the script, it is necessary to set several global variables, and initialize the script with the following code:
+<script type="text/javascript">
+	REV.base = 'http://revere.marketagility.com/';
+      REV.companyID = '3';
+      REV.productID = '25661';
+      REV.userID = '1';
+	REV.READ.tmplPath = '/assets/js/rev-templates/';
+	REV.WRITE.tmplPath = '/assets/js/rev-templates/';
+	REV.SNIPPET.tmplPath = '/assets/js/rev-templates/';
+	REV.init('snippet,read,write', REV.base, REV.companyID, REV.productID);
+</script>
+Explanation of variables:
+•	REV.base = the URL where the review data is stored
+•	REV.companyID = the company ID assigned to your company
+•	REV.productID = the ID of the product to read and/or write reviews for
+•	REV.userID = the ID of the user on the web site (from your system)
+•	REV.READ.tmplPath = the path to the directory containing the template for reading full reviews
+•	REV.SNIPPET.tmplPath = the path to the directory containing the template for reading “snippets” of reviews (just the overall rating information, not the detailed individual reviews)
+•	REV.WRITE.tmplPath = the path the directory containing the template for writing a new review
+•	REV.init = the function to initialize the Revere engine. The required paramaters are the type Revere action(s) to take (as a comma separated list – any combination of read, write, and snippet), the base URL for Revere, your Revere companyID and the product ID).
+
+Optional variables
+
+In addition to the required variables and parameters you may assign other variables for the engine to use.
+
+•	REV. pageSize = the number of reviews to include on each page if the reviews will be paginated. This is an integer, for example: 5.
+•	REV.callback = your own JavaScript function to call after the designated template has successfully loaded. The parameter this custom function will receive is the Revere type of template loaded; either “WRITE”,”READ”, or “SNIPPET”. We recommend this function check that parameter to perform custom actions once a Revere type gets loaded (for example applying a jQuery plugin to style form elements for the review writing. This is a string, for example: ‘revereLoaded’.
+•	REV.submitReview = the function to call after a user submits a new review. This function will receive a parameter indicating whether the review was successfully submitted – it will be “ok” if the review was successfully submitted or “error” if it was not submitted.
+
+
+2. HTML
+Revere allows full control over the HTML used to display reviews and the form to write reviews. Each Revere type (READ, SNIPPET, WRITE) is generated from a template. The templates contain DOM elements and variables that link the data to the template. The templates can be laid out and styled in any custom fashion desired.
+
+By default, Revere will look for a template named “default.html” in the directory defined in the variable for each Revere Type, but this can be changed easily.
+
+To display a Revere type on a page, just insert the following bit of code where the template should appear:
+<div id="snippet-wrap" data-rev="rev-snippet" data-pid="25661" data-tmpl="snippet" class="snippet-wrap"></div>
+
+The id is arbitrary, as is the class. The required data attribute “data-rev” tells the page what type of Revere object to use (rev-read, rev-snippet, or rev-write) while the optional data-tmpl attribute is used to define the template to use for rendering the Revere object. If no data-tmpl attribute is found, Revere will look for the template named “default.html” in the directory defined in the variable set for each Revere type. The data-pid attribute is the product ID of the product to read/write reviews for. 
+
+The templates contain required ID’s data attributes on the elements that should not be changed. The classes on the elements can be changed as necessary to accommodate for CSS to control the display of the elements.
+
+Snippet
+
+The Revere SNIPPET default template displays the overall rating of a product as an image and as text.  
+
+Here is the default HTML for the template:
+
+{{#rating}}
+<div class="rev-snippet-stars"><img src="/assets/img/{{rating}}stars.png"></div>
+<div class="snip-overall">
+    <em>{{rating}}</em> out of <em>5</em> based on <strong>{{reviewcounttext}}</strong>
+</div>
+{{/rating}}
+
+And this is a sample screenshot of how it renders in a browser:
+ 
+
+Read
+
+The Revere READ default template displays each individual review for the product, or if there are no reviews, the text to be displayed in place of reviews.
+
+Here is the default HTML for the template:
+
+<h3 class="rev-prod-title">
+    <span>&lsquo;{{name}}&rsquo;</span> Reviews
+</h3>
+{{#reviewPages}}
+<div class="rev-page" data-page-num="{{pageNum}}" id="rev-page-{{pageNum}}">
+	{{#reviews}}
+	<div class="rev-review" data-id="{{ID}}">
+	    {{#revtitle}}<h4 class="review-title">"{{{revtitle}}}"</h4>{{/revtitle}}
+	    <em class="author">
+		    <span>{{{ReviewDate}}}</span> <span>{{#nickname}}by {{{nickname}}}{{/nickname}}</span>
+	    </em>
+	    <div class="rev-read-stars"><img src="/assets/img/{{Score}}stars-half.png"></div><!-- /.star-holder -->
+	    <div class="attrs-wrap clearfix row-fluid">
+	        {{#attributes}}
+	        <div class="rev-read-attrs span6">
+	            <h5>{{{label}}}</h5>
+	            {{{value}}}
+	        </div>
+	        {{/attributes}}
+	    </div>
+	    <!-- ><div class="user-attrs-wrap clearfix">
+	        {{#userattributes}}
+	        <div class="rev-read-user-attrs">
+	            <h5>{{{label}}}</h5>
+	            {{{value}}}
+	        </div>
+	        {{/userattributes}}
+	    </div> -->
+	    <div class="review-content">
+	        <h4 class="rev-content-hdr">{{#nickname}}<em>{{{nickname}}}</em>'s {{/nickname}}thoughts:</h4>
+		    <p>
+			    {{{review}}}
+			</p>
+	    </div><!-- /.review-content -->
+	</div>
+	{{/reviews}}
+</div>
+{{/reviewPages}}
+{{#pagination}}
+<div class="rev-pagination pagination pagination-centered" id="rev-pagination">
+  <ul id="rev-pagination">
+    <li><a href="#" id="rev-pag-prev">&laquo;</a></li>
+	{{#pages}}
+	<li class="numeric"><a href="#" id="rev-page-{{.}}" data-page-num="{{.}}">{{.}}</a></li>
+	{{/pages}}
+    <li><a href="#" id="rev-pag-next">&raquo;</a></li>
+  </ul>
+</div>
+{{/pagination}}
+{{^reviewPages}}
+    <div class="reviews-empty" id="reviews-empty">
+        <h3>No reviews yet, be the first!</h3>
+        <p>
+            Share your opinion about products you've purchased with others. Write reviews and rate products on a scale from 1 to 5. It's easy and takes only a few minutes.
+        </p>
+        <p>
+            Review Writing Guidelines: Focus on the product features and your experience with them. Provide details about why you like or dislike the product.
+        </p>
+        <p>
+            Things to avoid:
+        </p>
+        <ul>
+            <li>
+                Obscenities, discriminatory language, or other language not suitable for public forums
+            </li>
+            <li>
+                Advertisements, "spam" content, or references to other products, offers or Web sites
+            </li>
+            <li>
+                E-mail addresses, URLs, phone numbers, physical addresses or other forms of contact information
+            </li>
+            <li>
+                Critical or spiteful comments on other reviews posted on the page or their authors
+            </li>
+        </ul>
+    </div>
+{{/reviewPages}}
+
+And here is a sample screenshot of what the browser renders:
+ 
+Write
+
+The Revere WRITE default template displays each individual review for the product, or if there are no reviews, the text to be displayed in place of reviews.
+
+Here is the default HTML for the template:
+<div class="rev-wrapper rev-write-wrapper clear clearfix">
+	<div class="rev-form-wrap clear clearfix" id="rev-write-review-form">
+	    <div class="rev-explanation" id="rev-explanation">
+	        <p>
+	            To see your review featured on our website:
+	        </p>
+	        <ul>
+	            <li>Use the product before reviewing it</li>
+	            <li>Focus on the product's features and be specific</li>
+	            <li>Avoid
+	                <ul class="sub-list">
+	                    <li>info that changes, such as price and promotional details</li>
+	                    <li>inappropriate language and attitude</li>
+	                    <li>info about other companies and websites</li>
+	                    <li>personal info &mdash; we want to protect your privacy!</li>
+	                </ul>
+	            </li>
+	            <li>If you write Review Text, it should be at least 50 characters, otherwise only your ratings will count.</li>
+	            <li>Have something else to say? Contact <a href="#" target="_blank">Customer Service</a>. (Your comment will be sent privately to our staff.)</li>
+	        </ul>
+	    </div>
+		<div id="rev-error" class="rev-error-wrap rev-post-result">Please double check the <span class="rev-error-txt required">red</span> fields.</div>
+		<div id="rev-success" class="rev-success-wrap rev-post-result">Thank you for your review, we're glad you told us what you think.</div>
+		<fieldset class="rev-fs rev-personal clear clearfix">
+			<input type="hidden" id="rev-userid" data-rev-field="userid" value="{{userID}}" />
+		    <legend>About You</legend>
+			<div class="control-group" id="rev-nickname-group" data-field-name="nickname">
+				<div class="controls rev-review-fields rev-required clearfix">
+				    <label class="rev-label control-label" for="txt-rev-nickname">your nickname:</label>
+					<input type="text" class="rev-txtbox rev-txt-nickname input-xlarge" id="rev-txt-nickname" data-rev-field="nickname" />
+				</div>
+			</div>
+			<div class="control-group" id="rev-email-group" data-field-name="email">
+				<div class="controls rev-review-fields rev-required clearfix">
+				    <label class="rev-label control-label" for="txt-rev-email">your email:</label>
+					<input type="text" class="rev-txtbox rev-txt-email input-xlarge" id="rev-txt-email" data-rev-field="email" />
+				</div>
+			</div>
+		</fieldset>
+		<fieldset class="rev-fs rev-ratings">
+		    <legend>Your Review</em></legend>
+		    <div class="control-group clearfix" id="rev-revtitle-group" data-field-name="title">
+			    <div class="controls rev-review-fields clearfix">
+			        <label class="rev-label control-label" for="txt-rev-revtitle">review title:</label>
+				    <input type="text" class="rev-txtbox rev-txt-email input-xlarge" id="rev-txt-revtitle" data-rev-field="revtitle" />
+			    </div>
+		    </div>
+		    <div class="control-group rev-overall-group clear clearfix" id="rev-overall-group" data-field-name="score">
+			    <label class="rev-label control-label">
+				    overall rating:
+			    </label>
+			    <div id="rev-overall" class="controls rev-review-fields rev-overall rev-required clearfix" data-rev-field="rev-score">
+				    <input type="radio" id="rev-rad-overall-1" value="1" name="rev-rad-overall" class="rev-logos" />
+				    <input type="radio" id="rev-rad-overall-2" value="2" name="rev-rad-overall" class="rev-logos" />
+				    <input type="radio" id="rev-rad-overall-3" value="3" name="rev-rad-overall" class="rev-logos" />
+				    <input type="radio" id="rev-rad-overall-4" value="4" name="rev-rad-overall" class="rev-logos" />
+				    <input type="radio" id="rev-rad-overall-5" value="5" name="rev-rad-overall" class="rev-logos" />
+				    <input type="hidden" id="rev-overall-hidden" value="" />
+			    </div><!-- /.controls -->
+		    </div><!-- /.control-group -->
+		    <div class="rev-ratings-attrs clear clearfix" id="rev-ratings-attrs">
+			    {{#attributes}}
+		        <fieldset class="clear clearfix">
+		            <legend>{{name}}</legend>
+			        <div class="control-group rev-attributes clear" id="rev-attributes-group-{{label}}">
+				        <div class="controls rev-review-fields rev-attr rev-attr-{{name}}" data-rev-field="rev-attr-{{name}}">
+					        {{#options}}
+					            <label for="rev-{{type}}-{{option}}" class="{{type}} inline"><input type="{{type}}" class="{{type}}" id="rev-{{type}}-{{option}}" value="{{option}}" name="rev-{{type}}-{{option}}" /><span>{{option}}</span></label>
+					        {{/options}}
+				        </div>
+			        </div>
+		        </fieldset>
+			    {{/attributes}}
+		    </div><!-- /.rev-ratings-attrs -->
+		    <div class="rev-ratings-attrs rev-user-attrs clear clearfix" id="rev-ratings-user-attrs">
+		        {{#userattributes}}
+		        <fieldset class="clear clearfix">
+		            <legend>{{name}}</legend>
+		            <span class="low-end end">{{sublabel1}}</span>
+		            <input type="radio" id="rev-rad-{{name}}-1" name="rev-rad-{{name}}" value="1" class="rev-logo" data-rev-field="rev-rad-{{name}}" />
+		            <input type="radio" id="rev-rad-{{name}}-2" name="rev-rad-{{name}}" value="2" class="rev-logo" data-rev-field="rev-rad-{{name}}" />
+		            <input type="radio" id="rev-rad-{{name}}-3" name="rev-rad-{{name}}" value="3" class="rev-logo" data-rev-field="rev-rad-{{name}}" />
+		            <input type="radio" id="rev-rad-{{name}}-4" name="rev-rad-{{name}}" value="4" class="rev-logo" data-rev-field="rev-rad-{{name}}" />
+		            <input type="radio" id="rev-rad-{{name}}-5" name="rev-rad-{{name}}" value="5" class="rev-logo" data-rev-field="rev-rad-{{name}}" />
+		            <span class="low-end end">{{sublabel5}}</span>
+		        </fieldset>
+		        {{/userattributes}}
+		    </div>
+		</fieldset><!-- /.rev-fs-ratings -->
+		<fieldset class="rev-fs rev-textareas clear clearfix">
+		    <legend>Your Thoughts</legend>
+			<div class="control-group" id="rev-review-group" data-field-name="review">
+				<label class="rev-label control-label" for="rev-txt-general">
+					<em>{{name}}</em>
+				</label>
+				<div class="controls rev-review-fields rev-textarea rev-required" data-rev-field="rev-review">
+					<textarea class="rev-textarea" rows="8" id="rev-txt-general"></textarea>
+				</div><!-- /.controls -->
+			</div><!-- /.control-group -->
+		</fieldset><!-- /.rev-textareas -->
+		<div class="form-actions clearfix">
+			<button class="btn-default primary" id="rev-write-submit">submit</button>
+			<button class="btn-default" id="rev-write-cancel">cancel</button>
+		</div><!-- /.form-actions -->
+	</div><!-- /.rev-form-wrap -->
+</div><!-- /.rev-wrapper -->
+
+And here is a sample screen shot of how the template renders in a browser:
+ 
+3. CSS
+The default CSS for the templates is based on the Twitter Bootstrap framework, but any other framework or custom CSS can be used to style the elements in the templates. It bears repeating that the elements’ classes should be used for CSS, reserving the ID’s and data attributes for the Revere engine to function properly. We recommend including a css file exclusively for the reviews in addition to any css files used on the site without reviews. This stylesheet should be inserted into the document’s <head> after any existing stylesheets.
+
+For example <link rel="stylesheet" href="assets/css/revere.css">
+
+4. Images
+Revere uses images to display “star” ratings.  These images can be uploaded into the Revere admin, or replaced on your web server. One image is required for each possible “star” rating (0 through 5, in increments of 0.5) for the snippets, and one smaller image for each possible “star” rating for reviews. And “empty star” and a “filled star” are required for the jQuery plugin that allows the Revere WRITE template to use stars in place of radio buttons.
+
+The large “star” images are recommended to be 320px wide by 64px tall (each “star” is 64 by 64). The smaller “stars” should be 160px wide by 32px tall (each “star” is 32 by 32.)
+
+
+Data Objects
+Revere uses 2 basic data objects – one for both READ and Write, and one for the SNIPPET. These data objects provide the key/value pairs that can be displayed via the templates. 
+
+A sample READ/WRITE data object is as follows:
+{
+    "productID": "25661",
+    "name": "Femme Fatale Top",
+    "brand": "Windsor",
+    "description": "You’ll feel like a fierce leading lady in this Femme Fatale Spellbound Floral Top.  Featuring a delightful scoop neckline and cinched waist, this short-sleeve peplum offers pristine pleating and clean construction throughout. Form-fitting and with a flirty hem finish, this zip-back top is a beautiful complement to Trina’s Tony Pant in Vertigo Twill.<LI>Made in California<LI>Approx. length from shoulder: 23 3/4&quot;<LI>Fully lined<LI>Center back zip<LI>Dry Clean<LI>100% Polyester",
+    "URL": "http://ma45demo.virid.com/p/25661/Femme-Fatale-Top.aspx",
+    "imageURL": "http://ma45demo.virid.com/images/products/1_25661_FS.JPG",
+    "price": "$218.00",
+    "UPC": "127301",
+    "EAN": "",
+    "rating": "4",
+    "reviewcount": "5",
+    "reviewclass": "default",
+    "template": "default.html",
+    "pagination": {
+        "pages": [
+            1,
+            2,
+            3
+        ]
+    },
+    "reviewPages": [
+        {
+            "pageNum": 1,
+            "reviews": [
+                {
+                    "ID": "34497",
+                    "ReviewDate": "09/26/2012",
+                    "Score": "4",
+                    "attributes": [
+                        {
+                            "label": "Pros",
+                            "type": "slider",
+                            "value": "Durable,"
+                        },
+                        {
+                            "label": "Cons",
+                            "type": "slider",
+                            "value": "poor quality,"
+                        }
+                    ],
+                    "location": "",
+                    "nickname": "gabe",
+                    "notes": "",
+                    "productID": "25661",
+                    "review": "this shirt is rad",
+                    "revtitle": "Test",
+                    "userID": "1",
+                    "userattributes": []
+                },
+                {
+                    "ID": "34521",
+                    "ReviewDate": "10/03/2012",
+                    "Score": "5",
+                    "attributes": [
+                        {
+                            "label": "Pros",
+                            "type": "slider",
+                            "value": "breathable,good value,looks great,"
+                        },
+                        {
+                            "label": "Cons",
+                            "type": "slider",
+                            "value": "expensive,too stiff,"
+                        }
+                    ],
+                    "location": "",
+                    "nickname": "chief",
+                    "notes": "",
+                    "productID": "25661",
+                    "review": "Bacon ipsum dolor sit amet shoulder venison tail biltong. Ribeye pork loin hamburger pastrami. Salami shankle ham hock corned beef shoulder short ribs. Jowl sausage pig sirloin pork jerky meatloaf.",
+                    "revtitle": "chief says",
+                    "userID": "1",
+                    "userattributes": []
+                }
+            ]
+        },
+        {
+            "pageNum": 2,
+            "reviews": [
+                {
+                    "ID": "34522",
+                    "ReviewDate": "10/03/2012",
+                    "Score": "4",
+                    "attributes": [
+                        {
+                            "label": "Pros",
+                            "type": "slider",
+                            "value": "looks great,vegan,"
+                        },
+                        {
+                            "label": "Cons",
+                            "type": "slider",
+                            "value": "hot,poor quality,"
+                        }
+                    ],
+                    "location": "",
+                    "nickname": "revered1",
+                    "notes": "",
+                    "productID": "25661",
+                    "review": "Chuck meatloaf turducken pork. Capicola filet mignon bacon biltong tri-tip, shank venison bresaola. Meatloaf prosciutto cow shoulder swine ham tenderloin pig jowl t-bone ham hock beef ribs frankfurter. Turducken strip steak turkey, chicken tenderloin salami cow prosciutto. Pancetta frankfurter sausage meatloaf beef ribeye, pig fatback beef ribs ground round bacon chuck strip steak t-bone pork loin.",
+                    "revtitle": "this is awesome",
+                    "userID": "1",
+                    "userattributes": []
+                },
+                {
+                    "ID": "34525",
+                    "ReviewDate": "10/03/2012",
+                    "Score": "3",
+                    "attributes": [
+                        {
+                            "label": "Pros",
+                            "type": "slider",
+                            "value": "comfortable,leather,vegan,"
+                        },
+                        {
+                            "label": "Cons",
+                            "type": "slider",
+                            "value": "hot,poor quality,unstable,"
+                        },
+                        {
+                            "label": "Length",
+                            "type": "slider",
+                            "value": "3"
+                        }
+                    ],
+                    "location": "",
+                    "nickname": "joe",
+                    "notes": "",
+                    "productID": "25661",
+                    "review": "joe’s thoughts: this product rocks it’s vegan leather",
+                    "revtitle": "joe’s title",
+                    "userID": "1",
+                    "userattributes": []
+                }
+            ]
+        },
+        {
+            "pageNum": 3,
+            "reviews": [
+                {
+                    "ID": "34527",
+                    "ReviewDate": "10/10/2012",
+                    "Score": "5",
+                    "attributes": [
+                        {
+                            "label": "Pros",
+                            "type": "slider",
+                            "value": "comfortable,looks great,vegan,smells nice,"
+                        },
+                        {
+                            "label": "Cons",
+                            "type": "slider",
+                            "value": "expensive,"
+                        }
+                    ],
+                    "location": "",
+                    "nickname": "jane",
+                    "notes": "",
+                    "productID": "25661",
+                    "review": "This is a great shirt.",
+                    "revtitle": "lovely",
+                    "userID": "1",
+                    "userattributes": [
+                        {
+                            "label": "Length",
+                            "type": "slider",
+                            "value": "3"
+                        },
+                        {
+                            "label": "Width",
+                            "type": "slider",
+                            "value": "3"
+                        },
+                        {
+                            "label": "Comfort",
+                            "type": "slider",
+                            "value": "4"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "attributes": [
+        {
+            "id": "28",
+            "name": "Pros",
+            "label": "Pros",
+            "type": "checkbox",
+            "options": [
+                {
+                    "option": "breathable"
+                },
+                {
+                    "option": "comfortable"
+                },
+                {
+                    "option": "looks great"
+                },
+                {
+                    "option": "eco-friendly"
+                },
+                {
+                    "option": "leather"
+                },
+                {
+                    "option": "vegan"
+                },
+                {
+                    "option": "smells nice"
+                }
+            ],
+            "sublabel1": "",
+            "sublabel2": "",
+            "sublabel3": "",
+            "sublabel4": "",
+            "sublabel5": ""
+        },
+        {
+            "id": "29",
+            "name": "Cons",
+            "label": "Cons",
+            "type": "checkbox",
+            "options": [
+                {
+                    "option": "expensive"
+                },
+                {
+                    "option": "hot"
+                },
+                {
+                    "option": "poor quality"
+                },
+                {
+                    "option": "stains easily"
+                },
+                {
+                    "option": "too stiff"
+                },
+                {
+                    "option": "unstable"
+                },
+                {
+                    "option": "unsupportive"
+                }
+            ],
+            "sublabel1": "",
+            "sublabel2": "",
+            "sublabel3": "",
+            "sublabel4": "",
+            "sublabel5": ""
+        }
+    ],
+    "userattributes": [
+        {
+            "id": "25",
+            "name": "Length",
+            "label": "Length",
+            "type": "slider",
+            "options": [],
+            "sublabel1": "Runs Short",
+            "sublabel2": "",
+            "sublabel3": "",
+            "sublabel4": "",
+            "sublabel5": "Runs Long"
+        },
+        {
+            "id": "26",
+            "name": "Width",
+            "label": "Width",
+            "type": "slider",
+            "options": [],
+            "sublabel1": "Runs Narrow",
+            "sublabel2": "",
+            "sublabel3": "",
+            "sublabel4": "",
+            "sublabel5": "Runs Wide"
+        },
+        {
+            "id": "27",
+            "name": "Comfort",
+            "label": "Comfort",
+            "type": "slider",
+            "options": [],
+            "sublabel1": "Uncomfortable",
+            "sublabel2": "",
+            "sublabel3": "",
+            "sublabel4": "",
+            "sublabel5": "Comfortable"
+        }
+    ],
+    "reviews": [
+        {
+            "ID": "34497",
+            "productID": "25661",
+            "userID": "1",
+            "nickname": "gabe",
+            "location": "",
+            "revtitle": "Test",
+            "review": "this shirt is rad",
+            "notes": "",
+            "ReviewDate": "09/26/2012",
+            "Score": "4",
+            "attributes": [
+                {
+                    "label": "Pros",
+                    "type": "slider",
+                    "value": "Durable,"
+                },
+                {
+                    "label": "Cons",
+                    "type": "slider",
+                    "value": "poor quality,"
+                }
+            ],
+            "userattributes": []
+        },
+        {
+            "ID": "34521",
+            "productID": "25661",
+            "userID": "1",
+            "nickname": "chief",
+            "location": "",
+            "revtitle": "chief says",
+            "review": "Bacon ipsum dolor sit amet shoulder venison tail biltong. Ribeye pork loin hamburger pastrami. Salami shankle ham hock corned beef shoulder short ribs. Jowl sausage pig sirloin pork jerky meatloaf.",
+            "notes": "",
+            "ReviewDate": "10/03/2012",
+            "Score": "5",
+            "attributes": [
+                {
+                    "label": "Pros",
+                    "type": "slider",
+                    "value": "breathable,good value,looks great,"
+                },
+                {
+                    "label": "Cons",
+                    "type": "slider",
+                    "value": "expensive,too stiff,"
+                }
+            ],
+            "userattributes": []
+        },
+        {
+            "ID": "34522",
+            "productID": "25661",
+            "userID": "1",
+            "nickname": "revered1",
+            "location": "",
+            "revtitle": "this is awesome",
+            "review": "Chuck meatloaf turducken pork. Capicola filet mignon bacon biltong tri-tip, shank venison bresaola. Meatloaf prosciutto cow shoulder swine ham tenderloin pig jowl t-bone ham hock beef ribs frankfurter. Turducken strip steak turkey, chicken tenderloin salami cow prosciutto. Pancetta frankfurter sausage meatloaf beef ribeye, pig fatback beef ribs ground round bacon chuck strip steak t-bone pork loin.",
+            "notes": "",
+            "ReviewDate": "10/03/2012",
+            "Score": "4",
+            "attributes": [
+                {
+                    "label": "Pros",
+                    "type": "slider",
+                    "value": "looks great,vegan,"
+                },
+                {
+                    "label": "Cons",
+                    "type": "slider",
+                    "value": "hot,poor quality,"
+                }
+            ],
+            "userattributes": []
+        },
+        {
+            "ID": "34525",
+            "productID": "25661",
+            "userID": "1",
+            "nickname": "joe",
+            "location": "",
+            "revtitle": "joe&rsquo;s title",
+            "review": "joe&rsquo;s thoughts: this product rocks it&rsquo;s vegan leather",
+            "notes": "",
+            "ReviewDate": "10/03/2012",
+            "Score": "3",
+            "attributes": [
+                {
+                    "label": "Pros",
+                    "type": "slider",
+                    "value": "comfortable,leather,vegan,"
+                },
+                {
+                    "label": "Cons",
+                    "type": "slider",
+                    "value": "hot,poor quality,unstable,"
+                },
+                {
+                    "label": "Length",
+                    "type": "slider",
+                    "value": "3"
+                }
+            ],
+            "userattributes": []
+        },
+        {
+            "ID": "34527",
+            "productID": "25661",
+            "userID": "1",
+            "nickname": "jane",
+            "location": "",
+            "revtitle": "lovely",
+            "review": "This is a great shirt.",
+            "notes": "",
+            "ReviewDate": "10/10/2012",
+            "Score": "5",
+            "attributes": [
+                {
+                    "label": "Pros",
+                    "type": "slider",
+                    "value": "comfortable,looks great,vegan,smells nice,"
+                },
+                {
+                    "label": "Cons",
+                    "type": "slider",
+                    "value": "expensive,"
+                }
+            ],
+            "userattributes": [
+                {
+                    "label": "Length",
+                    "type": "slider",
+                    "value": "3"
+                },
+                {
+                    "label": "Width",
+                    "type": "slider",
+                    "value": "3"
+                },
+                {
+                    "label": "Comfort",
+                    "type": "slider",
+                    "value": "4"
+                }
+            ]
+        }
+    ]
+}
+ 
+A sample SNIPPET data object is as follows:
+{
+    "rating": "4",
+    "reviewcount": "5",
+    "template": "default.html"
+}
+
